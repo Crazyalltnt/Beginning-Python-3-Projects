@@ -1,3 +1,6 @@
+#@author: Neil
+#2018-09-02
+
 from urllib.request import urlopen
 from reportlab.graphics.shapes import*
 from reportlab.graphics.charts.lineplots import LinePlot
