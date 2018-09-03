@@ -80,9 +80,9 @@ class WebsiteConstructor(Dispatcher, ContentHandler):
         self.out.close()
         
     def writeHeader(self, title):
-        self.out.write('<html>\n  <head\n  <title>>')
+        self.out.write('<html>\n  <head>\n  <title>')
         self.out.write(title)
-        self.out.write('</title\n  </head>\n  <body>\n')
+        self.out.write('</title>\n  </head>\n  <body>\n')
         
     def writeFooter(self):
         self.out.write('\n  </body>\n</html>\n')
