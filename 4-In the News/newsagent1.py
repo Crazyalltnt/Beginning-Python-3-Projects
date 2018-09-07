@@ -3,8 +3,8 @@
 
 from nntplib import NNTP
 
-servername = 'web.aioe.org' #NNTP服务器
-group = 'comp.lang.python'  #新闻组
+servername = 'news.gmane.org' #NNTP服务器
+group = 'gmane.comp.python.committers'  #新闻组
 server = NNTP(servername)
 howmany = 10    #指定获取文章数量
 #返回通用的服务器响应、新闻组包含的消息数、第一条和最后一条消息的编号以及新闻组名称
