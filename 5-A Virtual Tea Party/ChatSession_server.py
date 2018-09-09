@@ -17,7 +17,7 @@ class ChatSession(async_chat):
         async_chat.__init__(self, sock)
         self.set_terminator('\r\n'.encode())  #设置结束符为\r\n,(网络协议常用行结束符)
         self.data = []  #将已读取的数据存储在字符串列表
-        self.push('欢迎进入聊天室！'.encode('GBK'))
+        self.push('欢迎进入聊天室！'.encode())
         
     def collect_incoming_data(self, data):  #读取和暂存数据
         self.data.append(data.decode())
@@ -40,7 +40,7 @@ class ChatServer(dispatcher):
     def handle_accept(self):
         conn, addr, = self.accept()  #允许客户端连接，返回套接字和地址
         self.sessions.append(ChatSession(conn))
-        #print('Connection attempt from', addr[0])
+        print('Connection attempt from', addr[0])
         
 if __name__ == '__main__':
     s = ChatServer(PORT)
