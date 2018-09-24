@@ -1,4 +1,5 @@
-#尝试使用
+# 尝试使用
+
 打开多个终端， 创建目录files1和files2，在files2下创建文件test.txt，再在一个终端执行命令：
 ```python
 python simple_node.py http://127.0.0.1:4242 files1 123456
@@ -38,6 +39,7 @@ python simple_node.py http://127.0.0.1:4243 files2 456789
 [1, 'This is a test\n']
 ```
 成功了！
+
 现在我们测试最后一项功能----让节点一从节点二下载文件并存储它：
 ```python
 >>> mypeer.fetch('test.txt','123456')
