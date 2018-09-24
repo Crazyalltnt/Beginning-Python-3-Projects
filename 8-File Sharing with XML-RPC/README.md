@@ -46,3 +46,17 @@ python simple_node.py http://127.0.0.1:4243 files2 456789
 1
 ```
 你会发现，文件test.txt神奇地出现在files1目录下。
+
+# 再次实现
+
+在url.txt文件中存入对等体url路径，启动客户端：
+```python
+python client.py url.txt Files1 http://127.0.0.1:4242
+
+python client.py url.txt Files2 http://127.0.0.1:4243
+```
+在端口号4242的客户端中执行下载命令：
+```python
+> fetch test.txt
+```
+test.txt文件出现在files1目录下
