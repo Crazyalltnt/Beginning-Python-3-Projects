@@ -1,0 +1,2 @@
+python guiclient.py urlfile.txt files1 http://127.0.0.1:4242
+python guiclient.py urlfile.txt files2 http://127.0.0.1:4243
