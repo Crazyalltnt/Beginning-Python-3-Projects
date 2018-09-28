@@ -24,7 +24,7 @@ class Weight(SquishSprite):
     从天而降的铅锤。它使用SquishSprite的构造函数来设置表
     示铅锤的图像，并以其构造函数的一个参数指定的速度下降
     """
-    def __init__(self, image):
+    def __init__(self, speed):
         super().__init__(config.weight_image)
         self.speed = speed
         self.reset()
@@ -55,7 +55,7 @@ class Banana(SquishSprite):
         # 这些内边距表示图像中不属于香蕉的部分
         # 如果铅锤进入这些区域，并不认为它砸到了香蕉
         self.pad_top = config.banana_pad_top
-        self.pad_side config.banana_pad_side
+        self.pad_side = config.banana_pad_side
         
     def update(self):
         """

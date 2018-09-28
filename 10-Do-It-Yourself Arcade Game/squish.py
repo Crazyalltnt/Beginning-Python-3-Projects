@@ -57,13 +57,11 @@ class Level(State):
         "更新游戏状态"
         # 更新所有的精灵
         self.sprites.update()
-        # If the banana touches the weight, tell the game to switch to
-        # a GameOver state:
+        # 如果香蕉和铅锤发生了碰撞，就让游戏切换到GameOver状态
         if self.banana.touches(self.weight):
             game.next_state = GameOver()
-        # Otherwise, if the weight has landed, reset it. If all the
-        # weights of this level have been dodged, tell the game to
-        # switch to a LevelCleared state:
+        # 否则，如果铅锤已落到地上，就将其复位
+        # 如果躲开了当前关卡内的所有铅锤，就让游戏切换到LevelCleared状态
         elif self.weight.landed:
             self.weight.reset()
             self.remaining -= 1
@@ -72,10 +70,9 @@ class Level(State):
 
     def display(self, screen):
         """
-        Displays the state after the first display (which simply wipes
-        the screen). As opposed to firstDisplay, this method uses
-        pygame.display.update with a list of rectangles that need to
-        be updated, supplied from self.sprites.draw.
+        在第一次显示（清屏）后显示状态。不同于firstDisplay，
+        这个方法调用pygame.display.update并向它传递一个需要
+        更新的矩形列表，这个列表是由self.sprites.draw提供的
         """
         screen.fill(config.background_color)
         updates = self.sprites.draw(screen)
@@ -84,20 +81,18 @@ class Level(State):
 
 class Paused(State):
     """
-    A simple, paused game state, which may be broken out of by pressing
-    either a keyboard key or the mouse button.
+    简单的游戏暂停状态，用户可通过按任何键盘键或单击鼠标来结束这种状态
     """
 
-    finished = 0 # Has the user ended the pause?
-    image = None # Set this to a file name if you want an image
-    text = ''    # Set this to some informative text
+    finished = 0 # 用户结束暂停了吗？
+    image = None # 如果需要显示图像，将这个属性设置为一个文件名
+    text = ''    # 将这个属性设置为一些说明性文本
 
     def handle(self, event):
         """
-        Handles events by delegating to State (which handles quitting
-        in general) and by reacting to key presses and mouse
-        clicks. If a key is pressed or the mouse is clicked,
-        self.finished is set to true.
+        这样来处理事件：将这项任务委托给State（它只处理退出事件），
+        并对按键和鼠标单击做出响应。如果用户按下了键盘键或单击了鼠标，
+        就将self.finished设置为True
         """
         State.handle(self, event)
         if event.type in [MOUSEBUTTONDOWN, KEYDOWN]:
@@ -105,55 +100,50 @@ class Paused(State):
 
     def update(self, game):
         """
-        Update the level. If a key has been pressed or the mouse has
-        been clicked (i.e., self.finished is true), tell the game to
-        move to the state represented by self.next_state() (should be
-        implemented by subclasses).
+        更新关卡。如果用户按下了键盘键或单击了鼠标（即self.finished为True），
+        就让游戏切换到（由子类实现的方法）self.next_state()返回的状态
         """
         if self.finished:
             game.next_state = self.next_state()
 
     def first_display(self, screen):
         """
-        The first time the Paused state is displayed, draw the image
-        (if any) and render the text.
+        在首次显示暂停状态时调用，它绘制图像（如果指定了）并渲染文本
         """
-        # First, clear the screen by filling it with the background color:
+        # 首先，通过使用背景色填充屏幕来清屏
         screen.fill(config.background_color)
 
-        # Create a Font object with the default appearance, and specified size:
+        # 创建一个使用默认外观和指定字号的Font对象
         font = pygame.font.Font(None, config.font_size)
 
-        # Get the lines of text in self.text, ignoring empty lines at
-        # the top or bottom:
+        # 获取self.text中的文本行，但忽略开头和末尾的空行
         lines = self.text.strip().splitlines()
 
-        # Calculate the height of the text (using font.get_linesize()
-        # to get the height of each line of text):
+        # 使用font.get_linesize()获取每行文本的高度，并计算文本的总高度
         height = len(lines) * font.get_linesize()
 
-        # Calculate the placement of the text (centered on the screen):
+        # 计算文本的位置（在屏幕上居中）
         center, top = screen.get_rect().center
         top -= height // 2
 
-        # If there is an image to display...
+        # 如果有图像要显示...
         if self.image:
-            # load it:
+            # 加载该图像
             image = pygame.image.load(self.image).convert()
-            # get its rect:
+            # 获取其rect
             r = image.get_rect()
-            # move the text down by half the image height:
+            # 将文本下移图像高度一半的距离
             top += r.height // 2
-            # place the image 20 pixels above the text:
+            # 将图像放在文本上方20像素处
             r.midbottom = center, top - 20
-            # blit the image to the screen:
+            # 将图像传输到屏幕上
             screen.blit(image, r)
 
-        antialias = 1   # Smooth the text
-        black = 0, 0, 0 # Render it as black
+        antialias = 1   # 消除文本的锯齿
+        black = 0, 0, 0 # 使用黑色渲染文本
 
-        # Render all the lines, starting at the calculated top, and
-        # move down font.get_linesize() pixels for each line:
+        # 从计算得到的top处开始渲染所有的文本行
+        # 每渲染一行都向下移动font.get_linesize()像素
         for line in lines:
             text = font.render(line.strip(), antialias, black)
             r = text.get_rect()
@@ -161,15 +151,14 @@ class Paused(State):
             screen.blit(text, r)
             top += font.get_linesize()
 
-        # Display all the changes:
+        # 显示所做的所有修改
         pygame.display.flip()
 
 
 class Info(Paused):
 
     """
-    A simple paused state that displays some information about the
-    game. It is followed by a Level state (the first level).
+    显示一些游戏信息的简单暂停状态，紧跟在这个状态后面的是Level状态（第一关）
     """
 
     next_state = Level
@@ -183,8 +172,7 @@ class Info(Paused):
 class StartUp(Paused):
 
     """
-    A paused state that displays a splash image and a welcome
-    message. It is followed by an Info state.
+   显示启动图像和欢迎消息的暂停状态，紧跟在它后面的是Info状态
     """
 
     next_state = Info
@@ -196,8 +184,7 @@ class StartUp(Paused):
 
 class LevelCleared(Paused):
     """
-    A paused state that informs the user that he or she has cleared a
-    given level. It is followed by the next level state.
+    指出用户已过关的暂停状态，紧跟在它后面的是表示下一关的Level状态
     """
 
     def __init__(self, number):
@@ -211,8 +198,7 @@ class LevelCleared(Paused):
 class GameOver(Paused):
 
     """
-    A state that informs the user that he or she has lost the
-    game. It is followed by the first level.
+    指出游戏已结束的状态，紧跟在它后面的是表示第一关的Level状态
     """
 
     next_state = Level
@@ -223,54 +209,49 @@ class GameOver(Paused):
 class Game:
 
     """
-    A game object that takes care of the main event loop, including
-    changing between the different game states.
+    负责主事件循环（包括在不同游戏状态之间切换）的游戏对象
     """
 
     def __init__(self, *args):
-        # Get the directory where the game and the images are located:
+        # 获取游戏和图像所在的目录
         path = os.path.abspath(args[0])
         dir = os.path.split(path)[0]
-        # Move to that directory (so that the image files may be
-        # opened later on):
+        # 切换到这个目录，以便之后能够打开图像文件
         os.chdir(dir)
-        # Start with no state:
+        # 最初不处于任何状态
         self.state = None
-        # Move to StartUp in the first event loop iteration:
+        # 在第一次事件循环迭代中切换到StartUp状态
         self.next_state = StartUp()
 
     def run(self):
         """
-        This method sets things in motion. It performs some vital
-        initialization tasks, and enters the main event loop.
+        这个方法设置一些变量。它执行一些重要的初始化任务，并进入主事件循环
         """
-        pygame.init() # This is needed to initialize all the pygame modules
+        pygame.init() # 初始化所有的Pygame模块
 
-        # Decide whether to display the game in a window or to use the
-        # full screen:
-        flag = 0                  # Default (window) mode
-
+        # 决定在窗口还是整个屏幕中显示游戏
+        flag = 0                  # 默认在窗口中显示游戏
+        
         if config.full_screen:
-            flag = FULLSCREEN     # Full screen mode
+            flag = FULLSCREEN     # 全屏模式
         screen_size = config.screen_size
         screen = pygame.display.set_mode(screen_size, flag)
 
         pygame.display.set_caption('Fruit Self Defense')
         pygame.mouse.set_visible(False)
 
-        # The main loop:
+        # 主事件循环
         while True:
-            # (1) If nextState has been changed, move to the new state, and
-            #     display it (for the first time):
+            # (1) )如果nextState被修改，就切换到修改后的状态并显示它（首次）
             if self.state != self.next_state:
                 self.state = self.next_state
                 self.state.first_display(screen)
-            # (2) Delegate the event handling to the current state:
+            # (2) 将事件处理工作委托给当前状态
             for event in pygame.event.get():
                 self.state.handle(event)
-            # (3) Update the current state:
+            # (3) 更新当前状态
             self.state.update(self)
-            # (4) Display the current state:
+            # (4) 显示当前状态
             self.state.display(screen)
 
 if __name__ == '__main__':
